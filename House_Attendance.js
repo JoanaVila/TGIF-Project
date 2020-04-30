@@ -1,32 +1,48 @@
-let members = data.results[0].members;
+fetch('https://api.propublica.org/congress/v1/113/house/members.json',{
+  method: "GET",
+  headers: {
+            "X-API-Key": "NQWCPz6PqZpqMnHsmN9eaTmWca759260kQ5LInoB"
+   }
+})
+  .then(response => response.json())
+  .then(data => {
+    
+    main(data.results[0].members)
+  });
 
-let statistics = {"NumberOfDemocrats":filterMembers(members,"D"), 
-                "NumberOfRepublicans":filterMembers(members,"R"), 
-                "NumberOfIndependents":filterMembers(members,"ID"), 
-                "AveragePartyVotesD":avaragePartyVotes(members, "D"),
-                "AveragePartyVotesR":avaragePartyVotes(members, "R"),
-                "AveragePartyVotesID":avaragePartyVotes(members, "ID"),
-                "TotalNumberReps":0,
-                "TotalAverage": totalaverage(members),
-                "LeastEngaged":leastEngaged(members), 
-                "MostEngaged":mostEngaged(members),
-                };
-
-let listDemocrats = filterMembers(members,"D");
-let listRepublicans = filterMembers(members,"R");
-let listIndependents = filterMembers(members,"ID");
+  let statistics = {"NumberOfDemocrats":0, 
+  "NumberOfRepublicans":0, 
+  "NumberOfIndependents":0, 
+  "AveragePartyVotesD":0,
+  "AveragePartyVotesR":0,
+  "AveragePartyVotesID":0,
+  "TotalNumberReps":0,
+  "TotalAverage": 0,
+  "LeastEngaged":0, 
+  "MostEngaged":0,
+  };
+  function main (array){
+    statistics.NumberOfRepublicans = filterMembers(array,"R"),
+    statistics.NumberOfDemocrats = filterMembers(array,"D"),
+    statistics.NumberOfIndependents = filterMembers(array,"ID"), 
+    statistics.AveragePartyVotesD = averagePartyVotes(array, "D"),
+    statistics.AveragePartyVotesR = averagePartyVotes(array, "R"),
+    statistics.AveragePartyVotesID = averagePartyVotes(array, "ID"),
+    statistics.TotalNumberReps = statistics.NumberOfRepublicans + statistics.NumberOfDemocrats + statistics.NumberOfIndependents,
+    statistics.TotalAverage = totalAverage(array),
+    statistics.LeastEngaged = leastEngaged(array), 
+    statistics.MostEngaged = mostEngaged(array),
+    buildAtGlance (statistics);
+    buildTable(statistics.LeastEngaged,"senate-leastEngaged-table", "tBody-leastEngaged")
+    buildTable(statistics.MostEngaged,"senate-mostEngaged-table","tBody-mostEngaged");
+  }
 
 function filterMembers(array,partyLetter){
     return array.filter(member => member.party === partyLetter).length;
 
 }
-filterMembers(members,"D");
-filterMembers(members,"R");
-filterMembers(members,"ID");
 
-console.log(statistics);
-
-function avaragePartyVotes(array,partyLetter){
+function averagePartyVotes(array,partyLetter){
     let result = []
     array.filter(member =>{
 
@@ -39,19 +55,15 @@ function avaragePartyVotes(array,partyLetter){
         } else{
             return (result.reduce((a,b) => a + b)/result.length).toFixed(2);
         }    
-}
-console.log(avaragePartyVotes(members, "D"));
-console.log(avaragePartyVotes(members, "R"));
-console.log(avaragePartyVotes(members, "ID"));
+};
 
-function totalaverage (array){
+function totalAverage (array){
     let result = []
     array.filter(member => result.push(member.votes_with_party_pct));
     return (result.reduce((a,b) => a + b)/result.length).toFixed(2);
-    }
-console.log (totalaverage(members));
+    };
 
-function buildAtGlance (array) {
+function buildAtGlance (object) {
     let table = document.getElementById("house-glance-table");
     let tBody = document.getElementById("tBody");
         console.log(tBody);
@@ -61,16 +73,15 @@ function buildAtGlance (array) {
     let rowInd = document.getElementById("rowInd");
     let rowTotal = document.getElementById("rowTotal");
 
-    rowRep.insertCell().innerHTML = array.NumberOfRepublicans;
-    rowRep.insertCell().innerHTML = array.AveragePartyVotesR;
-    rowDem.insertCell().innerHTML = array.NumberOfDemocrats;
-    rowDem.insertCell().innerHTML = array.AveragePartyVotesD;
-    rowInd.insertCell().innerHTML = array.NumberOfIndependents;
-    rowInd.insertCell().innerHTML = array.AveragePartyVotesID;
-    rowTotal.insertCell().innerHTML = array.NumberOfRepublicans + array.NumberOfDemocrats + array.NumberOfIndependents;
-    rowTotal.insertCell().innerHTML = array.TotalAverage;
-}
-buildAtGlance(statistics);
+    rowRep.insertCell().innerHTML = object.NumberOfRepublicans;
+    rowRep.insertCell().innerHTML = object.AveragePartyVotesR;
+    rowDem.insertCell().innerHTML = object.NumberOfDemocrats;
+    rowDem.insertCell().innerHTML = object.AveragePartyVotesD;
+    rowInd.insertCell().innerHTML = object.NumberOfIndependents;
+    rowInd.insertCell().innerHTML = object.AveragePartyVotesID;
+    rowTotal.insertCell().innerHTML = object.NumberOfRepublicans + object.NumberOfDemocrats + object.NumberOfIndependents;
+    rowTotal.insertCell().innerHTML = object.TotalAverage;
+};
 
 function leastEngaged(array) {
     let result = []
@@ -82,8 +93,7 @@ function leastEngaged(array) {
     let x = result.sort((a,b) => b-a).slice(0, percentage);
     let y = Math.min.apply(null, x);
         return array.filter(member => member.missed_votes_pct >= y);
-}
-console.log(leastEngaged(members));
+};
 
 function buildTable (array,tableId, tBodyId) {
     let table = document.getElementById(tableId);
@@ -120,8 +130,6 @@ function mostEngaged(array) {
     console.log (x);
     let y = Math.max.apply(null, x);
         return array.filter(member => member.missed_votes_pct <= y);
-}
-console.log(mostEngaged(members));
-
+};
 
 buildTable(statistics.MostEngaged,"house-mostEngaged-table","tBody-mostEngaged");

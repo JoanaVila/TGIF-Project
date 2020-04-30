@@ -1,37 +1,104 @@
-let members = data.results[0].members;
+//let members = data.results[0].members;
 
-  let table = document.getElementById("senate-data");
-    console.log(table);
-  let tHead = document.getElementById("tbl-head");
-    console.log (tHead);
-    let tBody = document.createElement("tbody");
+fetch('https://api.propublica.org/congress/v1/113/house/members.json',{
+  method: "GET",
+  headers: {
+            "X-API-Key": "NQWCPz6PqZpqMnHsmN9eaTmWca759260kQ5LInoB"
+   }
+})
+  .then(response => response.json())
+  .then(data => {
+    main(data.results[0].members)
+  });
   
+
+  function main (array){
+    setTimeout(()=> {document.querySelector("#loader").className += ' ' + "hide-loader"});
+    buildTable (array);
+    addEvent(array);
+    selectbyState(array);
+  }
+
   function buildTable (array) {
+    let table = document.getElementById("house-data");
+    let tBody = document.getElementById("tbody_house");
 
-    for(i = 0 ; i < array.length ; i++) {
-     
-        let rowBody = document.createElement("tr");
+  for(i = 0 ; i < array.length ; i++) {
+  let rowBody = document.createElement("tr");
+      if (array[i].middle_name === null){
+        fullName= array[i].last_name + " " + array[i].first_name ;
+      } else {
+        fullName= array[i].last_name + " " + array[i].first_name + " " + array[i].middle_name  + " ";
+        };
+    rowBody.insertCell().innerHTML= fullName.link(array[i].url);
+    rowBody.insertCell().innerHTML= array[i].party;
+    rowBody.insertCell().innerHTML= array[i].state;
+    rowBody.insertCell().innerHTML= array[i].seniority;
+    rowBody.insertCell().innerHTML= array[i].votes_with_party_pct;
 
-        if (array[i].middle_name === null){
-               
-            fullName= array[i].last_name + " " + array[i].first_name ;
-              
-            } else {
+    tBody.appendChild(rowBody);
+  }
+};
 
-            fullName= array[i].last_name + " " + array[i].first_name + " " + array[i].middle_name  + " ";
-                
-           };
-           
-        rowBody.insertCell().innerHTML= fullName.link(array[i].url);
-        rowBody.insertCell().innerHTML= array[i].party;
-        rowBody.insertCell().innerHTML= array[i].state;
-        rowBody.insertCell().innerHTML= array[i].seniority;
-        rowBody.insertCell().innerHTML= array[i].votes_with_party_pct;
-
-      tBody.appendChild(rowBody);
-    }
-    table.appendChild(tBody);
-    console.log (tBody);
-  };
+function addEvent(array){
+  let checkbox = Array.from(document.querySelectorAll('input[name="party"]')).forEach(box => box.addEventListener("change",() => filter(array)));
+  let select = document.getElementById("state").addEventListener("change", () => filter(array));
     
-    buildTable(members);
+};
+  
+
+function filter(array){
+  let tBody = document.getElementById("tbody_house");
+  let checkboxvalue = Array.from(document.querySelectorAll('input[name="party"]:checked')).map(function(myinput) {
+    return myinput.value;
+    });
+  let select = document.getElementById("state").value;
+    if (checkboxvalue.length === 0 && select === "All"){
+  tBody.innerHTML = ""
+buildTable(array);
+      console.log("nopartynostate");
+    } 
+    if(checkboxvalue.length > 0 && select === "All"){
+  tBody.innerHTML = ""
+  let result = array.filter(member => checkboxvalue.includes(member.party));
+buildTable (result);
+      console.log(checkboxvalue);
+    }
+    if (checkboxvalue.length === 0 && select !== "All") {
+  tBody.innerHTML = ""
+  let result = array.filter(member => select === member.state);
+buildTable (result);
+      console.log("nopartystate");
+    }
+    if (checkboxvalue.length > 0 && select !== "All"){
+  tBody.innerHTML = ""
+  let result =  array.filter(member => checkboxvalue.includes(member.party) && select === member.state);
+buildTable (result);
+      console.log("partystate");
+    }
+};
+
+function selectbyState(array){
+  let states = []
+  let select = document.getElementById("state");
+    for (let i = 0; i < array.length; i++) {
+  states.push(array[i].state);
+    }
+  let filteredArray = states.filter(function(item, pos){
+      return states.indexOf(item) === pos
+      }).sort()
+    for (let j = 0; j < filteredArray.length; j++) {
+let options = document.createElement('option');
+options.innerHTML = filteredArray[j];
+options.value = filteredArray[j];
+select.appendChild(options);     
+    }
+};
+
+function loaded(){
+  var loaded = document.createElement('div');
+    loaded.setAttribute('class', 'loader')
+    var trs = document.querySelectorAll('td')
+    console.log(trs)
+}
+loaded();

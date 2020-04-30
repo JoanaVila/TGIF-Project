@@ -5,77 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Senate</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+        #loader {
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+        }
+        .hide-loader{
+        display:none;
+        }
+    </style>
 </head>
 <body>
     <header>            
         <div class= "logo">
             <div class= "row">
-                <div class="col-sm">
+                <div class="col-sm col px-md-5">
                     <img src="TGIF_LOGO.jpg" alt="TGIF_LOGO"class="img-fluid img-thumbnail">
                 </div>
                 
-                <div class="col-sm text-right">
+                <div class="col-sm col px-md-5 text-right">
                     <a href="mailto:info@tgif.net" class="text-right">info@tgif.net</a>
                 </div>
             </div>
         </div>
         <div>
-            <h1>TGIF </h1>
+            <h1 class="p-3">Transparent Government in Fact (TGIF) </h1>
         </div>
     </header>  
-    <nav class="navbar navbar-expand-sm navbar-light bg-light">
-     <div class="container-fluid">
-       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-           <li class="nav-item active">
-             <a class="nav-link" href="///C:/Users/joana_wlk2h78/Desktop/UBIQUM%20CODE%20ACADEMY/TGIF%20Project/TGIF/home-page.html"> Home</a>
-           </li>
-           <li class="nav-item active nav-item dropdown" >
-               <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Congress 113</a>
-       <div class="dropdown-menu">
-           <ul>
-             <li><a class="dropdown-link" href="file:///C:/Users/joana_wlk2h78/Desktop/UBIQUM%20CODE%20ACADEMY/TGIF%20Project/TGIF/senate-page.html">Senate</a></li>
-             <li><a class="dropdown-link" href="file:///C:/Users/joana_wlk2h78/Desktop/UBIQUM%20CODE%20ACADEMY/TGIF%20Project/TGIF/house-page.html">House</a></li>
-           </ul>
-       </div>
-    </li>
+    <nav class="navbar navbar-expand-sm">
+        <div class="container-fluid">
+          <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+              <li class="nav-item active">
+                <a class="nav-link" href="home-page.html">Home</a>
+              </li>
+              <li class="nav-item active nav-item dropdown" >
+                  <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="">Congress 113</a>
+          <div class="dropdown-menu">
+              <ul>
+                <li><a class="dropdown-link" href="senate-page.html">Senate</a></li>
+                <li><a class="dropdown-link" href="house-page.html">House</a></li>
+              </ul>
+          </div>
+            </li>
             <li class="nav-item active nav-item dropdown" >
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Attendance</a>
         <div class="dropdown-menu">
             <ul>
-            <li><a class="dropdown-link" href="#">Senate</a></li>
-            <li><a class="dropdown-link" href="#">House</a></li>
+              <li><a class="dropdown-link" href="Senate_Attendance.html">Senate</a></li>
+              <li><a class="dropdown-link" href="House_Attendance.html">House</a></li>
             </ul>
             <li class="nav-item active nav-item dropdown" >
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Party Loyalty</a>
         <div class="dropdown-menu">
             <ul>
-            <li><a class="dropdown-link" href="#">Senate</a></li>
-            <li><a class="dropdown-link" href="#">House</a></li>
+              <li><a class="dropdown-link" href="Senate_party_loyalty.html">Senate</a></li>
+              <li><a class="dropdown-link" href="House_party_loyalty.html">House</a></li>
             </ul>
         </div>
-         </li>
-       </ul>
-     </div>
-   </nav> 
+          </li> 
+          </ul>
+        </div>
+    </nav>
+    <div class = "container-fluid">
     <h2>Senators</h2>
     <p class="text-justify">First convened in 1789, the composition and powers of the Senate are established in Article One of the U.S. Constitution. Each state is represented by two senators, regardless of population, who serve staggered six-year terms. The Senate has several exclusive powers not granted to the House, including consenting to treaties as a precondition to their ratification and consenting to or confirming appointments of Cabinet secretaries, federal judges, other federal executive officials, military officers, regulatory officials, ambassadors, and other federal uniformed officers, as well as trial of federal officials impeached by the House.</p>
     <div>
         <p>Filter by Party:</p>
-        <input type="radio" id="party" name="party">
+        <div id = "checkbox">
+        <input type="checkbox" name="party" value="R">
         <label for="party">&nbsp;Republican</label>
-        <input type="radio" id="party" name="party">
+        <input type="checkbox" name="party" value="D">
         <label for="party">&nbsp;Democrat</label>
-        <input type="radio" id="party" name="party">
+        <input type="checkbox" name="party" value="ID">
         <label for="party">&nbsp;Independent</label>
+        </div>  
 
         <p>Filter by State:</p>
-        <select name="State" id="State">
+        <select name="state" id="state">
         <option value="All">All</option>
         </select>
     </div>
-
-    <table id = "senate-data" class="table">
-        <thead id = "tbl-head">
+    <div id ="loader"></div>
+    <table id = "senate-data" class="table table-striped">
             <tr>
                 <th>Full Name</th>
                 <th>Party</th>
@@ -84,13 +104,16 @@
                 <th>Percentage of votes with party (% added)</th>
             </tr>
         </thead>
+        <tbody id = "tbody_senate">
+
+        </tbody>
     </table>
+    </div>
 <footer>
     <div class="card-footer text-muted card text-center">
         <p> &#169; 2016 TGIF | All Rights Reserved</p>
     </div>
 </footer>
-<script src="pro-Congress-113-senate.js"></script>
     <script src ="senate-page.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
